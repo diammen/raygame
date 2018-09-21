@@ -10,6 +10,7 @@
 ********************************************************************************************/
 
 #include "raylib.h"
+#include "helper.h"
 
 int main()
 {
@@ -17,9 +18,17 @@ int main()
 	//--------------------------------------------------------------------------------------
 	int screenWidth = 800;
 	int screenHeight = 450;
+	int multiplier = 10;
+
+	Player player = {0,0};
+	Rectangle box = { 0,0,32,32 };
 
 	InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
+	Image ball = LoadImage("ballshade.png");
+	ImageCrop(&ball, box);
+
+	Texture2D texture = LoadTextureFromImage(ball);
 	SetTargetFPS(60);
 	//--------------------------------------------------------------------------------------
 
@@ -29,22 +38,41 @@ int main()
 		// Update
 		//----------------------------------------------------------------------------------
 		// TODO: Update your variables here
+		if (IsKeyDown(KEY_A))
+		{
+			box.x-= 1 * multiplier;
+		}
+		if (IsKeyDown(KEY_D))
+		{
+			box.x+= 1 * multiplier;
+		}
+		if (IsKeyDown(KEY_W))
+		{
+			box.y -= 1 * multiplier;
+		}
+		if (IsKeyDown(KEY_S))
+		{
+			box.y += 1 * multiplier;
+		}
 		//----------------------------------------------------------------------------------
 
 		// Draw
 		//----------------------------------------------------------------------------------
 		BeginDrawing();
 
-		ClearBackground(RAYWHITE);
+		ClearBackground(GRAY);
 
-		DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+		DrawTexture(texture, box.x, box.y, WHITE);
+		//DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
 
 		EndDrawing();
 		//----------------------------------------------------------------------------------
 	}
 
 	// De-Initialization
-	//--------------------------------------------------------------------------------------   
+	//--------------------------------------------------------------------------------------
+	UnloadTexture(texture); // Texture unloading
+
 	CloseWindow();        // Close window and OpenGL context
 	//--------------------------------------------------------------------------------------
 
