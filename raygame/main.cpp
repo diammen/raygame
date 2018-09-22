@@ -21,10 +21,12 @@ int main()
 	int multiplier = 5;
 	int currentFrame = 0;
 	int frameCounter = 0;
-	int frameSpeed = 8;
+	int frameSpeed = 10;
 
 	int slashFrame = 0;
 	int slashFrameCounter = 0;
+
+	bool playAnimation = false;
 
 	Player player = {0,0};
 	Rectangle box = { 0,0,32,32 };
@@ -33,21 +35,11 @@ int main()
 	InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
 	Vector2 position = { 100.0f, 100.0f };
-	Vector2 slashPosition = { 150.0f, 100.0f };
+	Vector2 slashPosition = { 120.0f, 100.0f };
+	Vector2 direction = { 0.0f, 0.0f };
 
-	//Image ball1 = LoadImage("ballshade.png");
-	//ImageCrop(&ball1, box);
-	//box.x = 32;
-	//Image ball2 = LoadImage("ballshade.png");
-	//ImageCrop(&ball2, box);
-	//box.x = 64;
-	//Image ball3 = LoadImage("ballshade.png");
-	//ImageCrop(&ball3, box);
-	//Texture2D texture1 = LoadTextureFromImage(ball1);
-	//Texture2D texture2 = LoadTextureFromImage(ball2);
-	//Texture2D texture3 = LoadTextureFromImage(ball3);
 	Texture2D ballTexture = LoadTexture("ballshade5.png");
-	Texture2D slashTexture = LoadTexture("slash.png");
+	Texture2D slashTexture = LoadTexture("slash2.png");
 
 	SetTargetFPS(60);
 	//--------------------------------------------------------------------------------------
@@ -59,6 +51,8 @@ int main()
 		//----------------------------------------------------------------------------------
 		frameCounter++;
 
+		direction = { 0,0 };
+
 		// idle animation
 		if (frameCounter >= 60 / frameSpeed)
 		{
@@ -69,39 +63,71 @@ int main()
 
 			box.x = (float)currentFrame*(float)ballTexture.width / 17;
 		}
-		if (IsKeyDown(KEY_A) && position.x > 0)
+		if (IsKeyDown(KEY_A))
 		{
+			direction.x -= 1;
 			position.x -= 1 * multiplier;
+			slashPosition.x -= 1 * multiplier;
 			box.x = 32 * 14;
 		}
-		if (IsKeyDown(KEY_D) && position.x < screenWidth - 32)
+		if (IsKeyDown(KEY_D))
 		{
+			direction.x += 1;
 			position.x += 1 * multiplier;
+			slashPosition.x += 1 * multiplier;
 			box.x = 32 * 13;
 		}
-		if (IsKeyDown(KEY_W) && position.y > 0)
+		if (IsKeyDown(KEY_W))
 		{
+			direction.y -= 1;
 			position.y -= 1 * multiplier;
+			slashPosition.y -= 1 * multiplier;
 			box.x = 32 * 15;
 		}
-		if (IsKeyDown(KEY_S) && position.y < screenHeight - 32)
+		if (IsKeyDown(KEY_S))
 		{
+			direction.y += 1;
 			position.y += 1 * multiplier;
+			slashPosition.y += 1 * multiplier;
 			box.x = 32 * 16;
 		}
-		if (IsKeyDown(KEY_F))
+		if (IsKeyPressed(KEY_F))
 		{
-			while (slashFrame < 3)
+			playAnimation = true;
+		}
+		if (playAnimation)
+		{
+			slashFrameCounter++;
+			if (slashFrameCounter >= 60 / frameSpeed)
 			{
-				slashFrameCounter++;
-				if (slashFrameCounter >= 60 / frameSpeed)
-				{
-					slashFrameCounter = 0;
-					slashFrame++;
+				slashFrameCounter = 0;
+				slashFrame++;
 
-					slashBox.x = (float)slashFrame*(float)slashTexture.width / 3;
+				if (slashFrame > 5)
+				{
+					playAnimation = false;
+					slashFrame = 0;
 				}
+				slashBox.x = (float)slashFrame*(float)slashTexture.width / 5;
 			}
+		}
+
+		// physics
+		if (position.x < 0)
+		{
+			position.x = 0;
+		}
+		if (position.x > screenWidth - box.width)
+		{
+			position.x = screenWidth - box.width;
+		}
+		if (position.y < 0)
+		{
+			position.y = 0;
+		}
+		if (position.y > screenHeight - box.height)
+		{
+			position.y = screenHeight - box.height;
 		}
 		//----------------------------------------------------------------------------------
 
