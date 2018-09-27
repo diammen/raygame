@@ -18,7 +18,7 @@ int main()
 	//--------------------------------------------------------------------------------------
 	int screenWidth = 800;
 	int screenHeight = 450;
-	int multiplier = 5;
+	int multiplier = 3;
 	int currentFrame = 0;
 	int frameCounter = 0;
 	int frameSpeed = 10;
@@ -27,14 +27,19 @@ int main()
 	int slashFrameCounter = 0;
 
 	bool playAnimation = false;
+	bool gameOver = false;
 
 	Player player = {0,0};
+	Rectangle playerCollision = { 0, 0, 32, 32 };
+	Rectangle enemyCollision = { 0, 0, 32, 32 };
 	Rectangle box = { 0,0,32,32 };
 	Rectangle slashBox = { 0,0,32,32 };
+	Rectangle rec = { 0,0,32,32 };
 
 	InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
 	Vector2 position = { 100.0f, 100.0f };
+	Vector2 enemyPosition = { 500.0f, 100.0f };
 	Vector2 slashPosition = { 120.0f, 100.0f };
 	Vector2 direction = { 0.0f, 0.0f };
 
@@ -52,6 +57,9 @@ int main()
 		frameCounter++;
 
 		direction = { 0,0 };
+
+		enemyCollision.x = enemyPosition.x;
+		enemyCollision.y = enemyPosition.y;
 
 		// idle animation
 		if (frameCounter >= 60 / frameSpeed)
@@ -112,22 +120,37 @@ int main()
 			}
 		}
 
+		// sync positions
+		playerCollision.x = position.x;
+		playerCollision.y = position.y;
+
+		bool collision = CheckCollisionRecs(playerCollision, enemyCollision);
+
+		if (collision)
+		{
+			gameOver = true;
+		}
+
 		// physics
 		if (position.x < 0)
 		{
 			position.x = 0;
+			slashPosition.x = 20;
 		}
 		if (position.x > screenWidth - box.width)
 		{
 			position.x = screenWidth - box.width;
+			slashPosition.x = screenWidth - box.width;
 		}
 		if (position.y < 0)
 		{
 			position.y = 0;
+			slashPosition.y = 0;
 		}
 		if (position.y > screenHeight - box.height)
 		{
 			position.y = screenHeight - box.height;
+			slashPosition.y = screenHeight - box.height;
 		}
 		//----------------------------------------------------------------------------------
 
@@ -139,6 +162,11 @@ int main()
 
 		DrawTextureRec(ballTexture, box, position, WHITE);
 		DrawTextureRec(slashTexture, slashBox, slashPosition, WHITE);
+		DrawTextureRec(ballTexture, Rectangle{ 0,0,32,32 }, Vector2{ 500,100 }, WHITE);
+		if (gameOver)
+		{
+			DrawText("GAME OVER", GetScreenWidth() / 2 - MeasureText("GAME OVER", 20) / 2, GetScreenHeight() / 2 - 50, 20, WHITE);
+		}
 
 		EndDrawing();
 		//----------------------------------------------------------------------------------
@@ -147,6 +175,7 @@ int main()
 	// De-Initialization
 	//--------------------------------------------------------------------------------------
 	UnloadTexture(ballTexture); // Texture unloading
+	UnloadTexture(slashTexture);
 
 	CloseWindow();        // Close window and OpenGL context
 	//--------------------------------------------------------------------------------------
