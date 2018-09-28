@@ -1,9 +1,14 @@
 #pragma once
 
-struct Player
+struct Enemy
 {
-	float x;
-	float y;
+	Rectangle rec;
+	Vector2 pos;
+	Vector2 dir;
+	float speed;
+	bool active;
 };
 
 float lerp(float a, float b, float f);
+
+void AddForce(Vector2 dir);
