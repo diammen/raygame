@@ -18,16 +18,18 @@ int main()
 	//--------------------------------------------------------------------------------------
 	int screenWidth = 800;
 	int screenHeight = 450;
-	int multiplier = 2;
+	float multiplier = 1.90f;
 	int currentFrame = 0;
 	int frameCounter = 0;
 	int frameSpeed = 10;
+	int textSize = 1;
 	int playerSpeed = 7;
 	int health = 20;
 	int timer = 0;
 	int counter = 0;
-	const int enemySize = 20;
+	const int enemySize = 25;
 	int enemiesActive = enemySize;
+	int enemiesKilled = 0;
 
 	int slashFrame = 0;
 	int slashFrameCounter = 0;
@@ -38,12 +40,14 @@ int main()
 	int force = 3;
 
 	bool playAnimation = false;
+	bool hit = false;
+	bool mileStone = false;
 	bool explosion = false;
 	bool gameOver = false;
 
 	Enemy enemy[enemySize];
 	Rectangle playerCollision = { -100, -100, 32, 32 };
-	Rectangle enemyCollision[20];
+	Rectangle enemyCollision[enemySize];
 	Rectangle box = { 0,0,32,32 };
 	Rectangle slashBox = { 0,0,32,32 };
 	Rectangle explosionBox{ 0,0,32,32 };
@@ -58,8 +62,10 @@ int main()
 	Vector2 direction = { 0.0f, 0.0f };
 
 	Texture2D ballTexture = LoadTexture("ballshade5.png");
+	Texture2D spikeBallTexture = LoadTexture("spikeball.png");
 	Texture2D slashTexture = LoadTexture("slash2.png");
 	Texture2D explosionTexture = LoadTexture("explosion.png");
+	Texture2D impactTexture = LoadTexture("explosion1.png");
 
 	// Initialize enemies
 	for (int i = 0; i < enemySize; ++i)
@@ -73,6 +79,7 @@ int main()
 		enemy[i].dir = { 0,0 };
 		enemy[i].speed = 0;
 		enemy[i].active = true;
+		enemy[i].health = 2;
 		enemyCollision[i] = enemy[i].rec;
 	}
 
@@ -111,6 +118,7 @@ int main()
 				{
 					enemy[i].pos.x = GetRandomValue(screenWidth, screenWidth + 1000);
 					enemy[i].pos.y = GetRandomValue(0, screenHeight - enemy[i].rec.height);
+					enemy[i].health = 2;
 					health--;
 				}
 			
@@ -154,6 +162,14 @@ int main()
 				slashPosition.y = position.y;
 				box.x = 32 * 16;
 			}
+			if (IsKeyPressed(KEY_LEFT_SHIFT))
+			{
+				playerSpeed /= 2;
+			}
+			if (IsKeyReleased(KEY_LEFT_SHIFT))
+			{
+				playerSpeed *= 2;
+			}
 			if (IsKeyPressed(KEY_F))
 			{
 				playAnimation = true;
@@ -161,8 +177,16 @@ int main()
 			// Play slashing animation
 			if (playAnimation)
 			{
-				playerCollision.x = position.x + 20;
-				playerCollision.y = position.y;
+				if (!hit)
+				{
+					playerCollision.x = position.x + 20;
+					playerCollision.y = position.y;
+				}
+				else
+				{
+					playerCollision.x = -100;
+					playerCollision.y = -100;
+				}
 				slashFrameCounter++;
 				if (slashFrameCounter >= 60 / frameSpeed)
 				{
@@ -181,8 +205,9 @@ int main()
 			{
 				playerCollision.x = -100;
 				playerCollision.y = -100;
+				hit = false;
 			}
-			// Play explosion animation
+			// Play explosion animation when player hits enemy
 			if (explosion)
 			{
 				explosionFrameCounter++;
@@ -191,7 +216,7 @@ int main()
 					explosionFrameCounter = 0;
 					explosionFrame++;
 
-					if (explosionFrame > 6)
+					if (explosionFrame > 5)
 					{
 						explosion = false;
 						explosionFrame = 0;
@@ -199,6 +224,7 @@ int main()
 					explosionBox.x = (float)explosionFrame*(float)explosionTexture.width / 7;
 				}
 			}
+			// Play 
 			// Go through each enemy and check for a collision with the player's attack
 			for (int i = 0; i < enemiesActive; ++i)
 			{
@@ -208,17 +234,30 @@ int main()
 					enemy[i].speed /= 1.25;
 					if (CheckCollisionRecs(playerCollision, enemyCollision[i]))
 					{
+						hit = true;
 						explosion = true;
 						explosionPosition.x = enemy[i].pos.x;
 						explosionPosition.y = enemy[i].pos.y;
 						enemy[i].speed = 20;
-						//enemy[i].active = false;
-						//enemiesKilled++;
+						enemy[i].health--;
+						if (enemy[i].health < 0) enemy[i].health = 0;
+						if (enemy[i].health == 0)
+						{
+							enemy[i].pos.x = GetRandomValue(screenWidth, screenWidth + 1000);;
+							enemiesKilled++;
+							enemy[i].health = 2;
+						}
 					}
+
 				}
 			}
 
-			// check win condition
+			if (enemiesKilled % 10 == 1)
+			{
+				mileStone = true;
+			}
+
+			// check game over condition
 			if (health == 0)
 			{
 				gameOver = true;
@@ -263,14 +302,23 @@ int main()
 			{
 				if (enemy[i].active)
 				{
-					DrawTextureRec(ballTexture, enemy[i].rec, enemy[i].pos, WHITE);
+					//DrawTextureRec(spikeBallTexture, enemy[i].rec, enemy[i].pos, WHITE);
+					DrawTextureEx(spikeBallTexture, enemy[i].pos, 0, 1, WHITE);
 				}
 			}
 			DrawText(FormatText("HEALTH: %i", health), 5, 5, 20, WHITE);
 			DrawText(FormatText("TIME: %i", counter), 200, 5, 20, WHITE);
+			DrawText(FormatText("Kills: %i", enemiesKilled), 400, 5, 20, WHITE);
 			if (explosion)
 			{
 				DrawTextureRec(explosionTexture, explosionBox, explosionPosition, WHITE);
+			}
+			if (mileStone)
+			{
+				if (textSize < 30)
+				DrawText("Bonus!", GetScreenWidth() / 2 - MeasureText("Bonus!", 20) / 2, GetScreenHeight() / 2 - 100, textSize++, WHITE);
+				if (textSize >= 30)
+					DrawText("Bonus!", GetScreenWidth() / 2 - MeasureText("Bonus!", 20) / 2, GetScreenHeight() / 2 - 100, textSize, WHITE);
 			}
 		}
 		else
@@ -287,8 +335,10 @@ int main()
 	// De-Initialization
 	//--------------------------------------------------------------------------------------
 	UnloadTexture(ballTexture); // Texture unloading
+	UnloadTexture(spikeBallTexture);
 	UnloadTexture(slashTexture);
 	UnloadTexture(explosionTexture);
+	UnloadTexture(impactTexture);
 
 	CloseWindow();        // Close window and OpenGL context
 	//--------------------------------------------------------------------------------------

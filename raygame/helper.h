@@ -6,6 +6,7 @@ struct Enemy
 	Vector2 pos;
 	Vector2 dir;
 	float speed;
+	int health;
 	bool active;
 };
 
