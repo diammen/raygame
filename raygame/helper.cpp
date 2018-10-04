@@ -1,7 +1,7 @@
 #include "raylib.h"
 #include "helper.h"
 
-float lerp(float a, float b, float f)
+float AddForce(float x, float speed, float force)
 {
-	return (a * (1.0 - f)) + (b * f);
+	return x += speed * force;
 }

@@ -12,4 +12,4 @@ struct Enemy
 
 float lerp(float a, float b, float f);
 
-void AddForce(Vector2 dir);
+float AddForce(float x, float spd, float force);

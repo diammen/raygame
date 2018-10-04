@@ -21,8 +21,9 @@ int main()
 	float multiplier = 1.90f;
 	int currentFrame = 0;
 	int frameCounter = 0;
-	int frameSpeed = 10;
+	int frameSpeed = 12;
 	int textSize = 1;
+	int textCounter = 0;
 	int playerSpeed = 7;
 	int health = 20;
 	int timer = 0;
@@ -30,14 +31,16 @@ int main()
 	const int enemySize = 25;
 	int enemiesActive = enemySize;
 	int enemiesKilled = 0;
+	int killCount = 0;
 
 	int slashFrame = 0;
 	int slashFrameCounter = 0;
+	float slashRotation = 0;
 
 	int explosionFrame = 0;
 	int explosionFrameCounter = 0;
 
-	int force = 3;
+	float force = 3;
 
 	bool playAnimation = false;
 	bool hit = false;
@@ -54,7 +57,7 @@ int main()
 	Rectangle rec = { 0,0,32,32 };
 
 
-	InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+	InitWindow(screenWidth, screenHeight, "super game");
 
 	Vector2 position = { 100.0f, 100.0f };
 	Vector2 slashPosition = { 120.0f, 100.0f };
@@ -193,7 +196,7 @@ int main()
 					slashFrameCounter = 0;
 					slashFrame++;
 
-					if (slashFrame > 1)
+					if (slashFrame > 4)
 					{
 						playAnimation = false;
 						slashFrame = 0;
@@ -224,13 +227,14 @@ int main()
 					explosionBox.x = (float)explosionFrame*(float)explosionTexture.width / 7;
 				}
 			}
-			// Play 
+			
 			// Go through each enemy and check for a collision with the player's attack
 			for (int i = 0; i < enemiesActive; ++i)
 			{
 				if (enemy[i].active)
 				{
-					enemy[i].pos.x += enemy[i].speed * force;
+					//enemy[i].pos.x += enemy[i].speed * force;
+					enemy[i].pos.x = AddForce(enemy[i].pos.x, enemy[i].speed, force);
 					enemy[i].speed /= 1.25;
 					if (CheckCollisionRecs(playerCollision, enemyCollision[i]))
 					{
@@ -245,6 +249,11 @@ int main()
 						{
 							enemy[i].pos.x = GetRandomValue(screenWidth, screenWidth + 1000);;
 							enemiesKilled++;
+							killCount++;
+							if (killCount > 5)
+							{
+								killCount = 5;
+							}
 							enemy[i].health = 2;
 						}
 					}
@@ -252,9 +261,29 @@ int main()
 				}
 			}
 
-			if (enemiesKilled % 10 == 1)
+			if (enemiesKilled % 5 == 0 && enemiesKilled != 0)
 			{
 				mileStone = true;
+			}
+
+			if (mileStone)
+			{
+				textCounter++;
+				if (textCounter < 30)
+				{
+					textSize += 2;
+				}
+				else if (textCounter >= 30)
+				{
+					textSize -= 2;
+				}
+				if (textCounter >= 55)
+				{
+					mileStone = false;
+					killCount = 0;
+					textCounter = 0;
+					textSize = 0;
+				}
 			}
 
 			// check game over condition
@@ -296,7 +325,7 @@ int main()
 			DrawTextureRec(ballTexture, box, position, WHITE);
 			if (playAnimation)
 			{
-				DrawTextureRec(slashTexture, slashBox, slashPosition, WHITE);
+				DrawTexturePro(slashTexture, slashBox, Rectangle{ slashPosition.x, slashPosition.y, 32, 32 }, Vector2{ 0,0 }, 0, WHITE);
 			}
 			for (int i = 0; i < enemiesActive; ++i)
 			{
@@ -315,10 +344,7 @@ int main()
 			}
 			if (mileStone)
 			{
-				if (textSize < 30)
-				DrawText("Bonus!", GetScreenWidth() / 2 - MeasureText("Bonus!", 20) / 2, GetScreenHeight() / 2 - 100, textSize++, WHITE);
-				if (textSize >= 30)
-					DrawText("Bonus!", GetScreenWidth() / 2 - MeasureText("Bonus!", 20) / 2, GetScreenHeight() / 2 - 100, textSize, WHITE);
+				DrawText("Bonus!", GetScreenWidth() / 2 - MeasureText("Bonus!", textSize) / 2, GetScreenHeight() / 2 - 50, textSize, WHITE);
 			}
 		}
 		else
