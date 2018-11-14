@@ -131,11 +131,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FallingFactory.cpp" />
     <ClCompile Include="helper.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FallingFactory.h" />
     <ClInclude Include="helper.h" />
+    <ClInclude Include="Sprite.h" />
+    <ClInclude Include="tObjectPool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

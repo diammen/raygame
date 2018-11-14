@@ -10,7 +10,13 @@
 ********************************************************************************************/
 
 #include "raylib.h"
+#include <time.h>
+#include <iostream>
+#include <string>
+#include <vector>
 #include "helper.h"
+#include "FallingFactory.h"
+using std::vector;
 
 int main()
 {
@@ -22,10 +28,11 @@ int main()
 	int currentFrame = 0;
 	int frameCounter = 0;
 	int frameSpeed = 12;
+	int bonusSpeed = 12;
 	int textSize = 1;
 	int textCounter = 0;
 	int playerSpeed = 7;
-	int health = 20;
+	int health = 100000;
 	int timer = 0;
 	int counter = 0;
 	const int enemySize = 25;
@@ -70,6 +77,9 @@ int main()
 	Texture2D explosionTexture = LoadTexture("explosion.png");
 	Texture2D impactTexture = LoadTexture("explosion1.png");
 
+	vector<Sprite> ents;
+	ents.push_back(*FallingFactory::GetInstance().getRandom());
+
 	// Initialize enemies
 	for (int i = 0; i < enemySize; ++i)
 	{
@@ -77,7 +87,7 @@ int main()
 		enemy[i].rec.y = 0;
 		enemy[i].rec.width = 32;
 		enemy[i].rec.height = 32;
-		enemy[i].pos.x = GetRandomValue(screenWidth, screenWidth + 1000);
+		enemy[i].pos.x = GetRandomValue(screenWidth, screenWidth + 1000.0f);
 		enemy[i].pos.y = GetRandomValue(0, screenHeight - enemy[i].rec.height);
 		enemy[i].dir = { 0,0 };
 		enemy[i].speed = 0;
@@ -97,7 +107,10 @@ int main()
 		if (!gameOver)
 		{
 
-
+			for (int i = 0; i < ents.size(); ++i)
+			{
+				ents[i].translate(Vector2{ 0,200 });
+			}
 			frameCounter++;
 			timer++;
 
@@ -105,6 +118,7 @@ int main()
 			if (timer % 60 == 1)
 			{
 				counter++;
+				ents.push_back(FallingFactory::GetInstance().getRandom()->clone());
 			}
 				
 
@@ -191,7 +205,7 @@ int main()
 					playerCollision.y = -100;
 				}
 				slashFrameCounter++;
-				if (slashFrameCounter >= 60 / frameSpeed)
+				if (slashFrameCounter >= 60 / frameSpeed - bonusSpeed)
 				{
 					slashFrameCounter = 0;
 					slashFrame++;
@@ -247,7 +261,7 @@ int main()
 						if (enemy[i].health < 0) enemy[i].health = 0;
 						if (enemy[i].health == 0)
 						{
-							enemy[i].pos.x = GetRandomValue(screenWidth, screenWidth + 1000);;
+							enemy[i].pos.x = GetRandomValue(screenWidth, screenWidth + 1000.0f);;
 							enemiesKilled++;
 							killCount++;
 							if (killCount > 5)
@@ -322,6 +336,10 @@ int main()
 		ClearBackground(GRAY);
 		if (!gameOver)
 		{
+			for (int i = 0; i < ents.size(); ++i)
+			{
+				ents[i].draw();
+			}
 			DrawTextureRec(ballTexture, box, position, WHITE);
 			if (playAnimation)
 			{
