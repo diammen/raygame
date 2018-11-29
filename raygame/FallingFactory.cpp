@@ -9,7 +9,7 @@ FallingFactory& FallingFactory::GetInstance()
 FallingFactory::FallingFactory()
 {
 	spriteCount = 4;
-	tSpriteMasters = new tObjectPool<Sprite>(10);
+	tSpriteMasters = new tObjectPool<Sprite>(50);
 	tSpriteMasters->pool[0] = *(new Sprite("ballshade_1.png", "ball", 1));
 	tSpriteMasters->pool[1] = *(new Sprite("ballshade_2.png", "ball", 1));
 	tSpriteMasters->pool[2] = *(new Sprite("ballshade_3.png", "ball", 1));

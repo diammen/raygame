@@ -63,9 +63,10 @@ void tObjectPool<T>::recycle(T* obj)
 {
 	for (int i = 0; i < capacity(); ++i)
 	{
-		if (pool[i] == obj)
+		if (!free[i])
 		{
-			free = true;
+			pool[i] = obj;
+			free[i] = true;
 		}
 	}
 }

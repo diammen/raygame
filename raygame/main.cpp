@@ -123,7 +123,7 @@ int main()
 			if (timer % 60 == 1)
 			{
 				counter++;
-				ents.push_back(FallingFactory::GetInstance().getRandom()->clone());
+				ents.push_back(FallingFactory::GetInstance().getRandom());
 			}
 				
 
