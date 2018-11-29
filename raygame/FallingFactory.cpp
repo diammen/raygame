@@ -25,7 +25,7 @@ FallingFactory::~FallingFactory()
 
 Sprite * FallingFactory::getRandom()
 {
-	return &(spriteMasters[rand() % spriteCount]);
+	return tSpriteMasters->retrieve();
 }
 
 Sprite * FallingFactory::getFromType(const std::string & _sprType)

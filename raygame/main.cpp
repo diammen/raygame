@@ -78,7 +78,6 @@ int main()
 	Texture2D impactTexture = LoadTexture("explosion1.png");
 
 	vector<Sprite> ents;
-	ents.push_back(*FallingFactory::GetInstance().getRandom());
 
 	// Initialize enemies
 	for (int i = 0; i < enemySize; ++i)
@@ -110,7 +109,7 @@ int main()
 			for (int i = 0; i < ents.size(); ++i)
 			{
 				ents[i].translate(Vector2{ 0,200 });
-				if (ents[i].pos.y >= screenHeight)
+				if (ents[i].r2.y >= screenHeight)
 				{
 					FallingFactory::GetInstance().tSpriteMasters->recycle(&ents[i]);
 					ents.erase(ents.begin()+i);

@@ -11,10 +11,10 @@ public:
 	tObjectPool(size_t initialCapacity);	 // initializes the pool to have a set number of objects
 	~tObjectPool();                      // destroys all objects
 
-	T* pool;						// all objects stored in the pool
-	bool* free;					// indicates whether an object is available
+	T* pool;							// all objects stored in the pool
+	bool* free;							// indicates whether an object is available
 
-	T * retrieve();                      // returns a pointer to an object that will be used (returns null if none available)
+	T * retrieve();                     // returns a pointer to an object that will be used (returns null if none available)
 	void recycle(T* obj);               // accepts a pointer that can be used in the future
 
 	size_t size;
@@ -67,6 +67,7 @@ void tObjectPool<T>::recycle(T* obj)
 		{
 			pool[i] = obj;
 			free[i] = true;
+			return;
 		}
 	}
 }

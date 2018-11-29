@@ -42,9 +42,9 @@ Sprite::Sprite(const std::string & filename, const std::string _sprType, float s
 	r1.width = texture.width;
 	r1.height = texture.height;
 	r2.x = rand() % 800;
-	r2.y = -r2.height;
 	r2.width = r1.width * scale;
 	r2.height = r1.height * scale;
+	r2.y = -r2.height;
 	sprType = _sprType;
 }
 
