@@ -3,10 +3,6 @@
 void Sprite::translate(Vector2 delta)
 {
 	r2.y += delta.y * GetFrameTime();
-	if (r2.y >= GetScreenHeight())
-	{
-		r2.y = -r2.height;
-	}
 }
 
 void Sprite::draw()
@@ -49,6 +45,7 @@ Sprite::Sprite(const std::string & filename, const std::string _sprType, float s
 	r2.y = -r2.height;
 	r2.width = r1.width * scale;
 	r2.height = r1.height * scale;
+	sprType = _sprType;
 }
 
 Sprite::~Sprite() {}

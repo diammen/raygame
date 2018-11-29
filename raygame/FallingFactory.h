@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
 #include "Sprite.h"
+#include "tObjectPool.h"
 #include <random>
 #include <chrono>
 #include <vector>
@@ -15,6 +16,7 @@ private:
 	void operator=(FallingFactory const&) {}
 public:
 	Sprite * spriteMasters;
+	tObjectPool<Sprite> * tSpriteMasters;
 	size_t spriteCount;
 
 	Sprite * getRandom();// returns a random sprite from all sprites loaded
