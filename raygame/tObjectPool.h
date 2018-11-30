@@ -24,7 +24,8 @@ public:
 template <typename T>
 tObjectPool<T>::tObjectPool()
 {
-
+	pool = nullptr;
+	free = nullptr;
 }
 
 template <typename T>
@@ -32,17 +33,18 @@ tObjectPool<T>::tObjectPool(size_t initialCapacity)
 {
 	pool = new T[initialCapacity];
 	free = new bool[initialCapacity];
+	size = initialCapacity;
 	for (int i = 0; i < capacity(); ++i)
 	{
 		free[i] = true;
 	}
-	size = initialCapacity;
 }
 
 template <typename T>
 tObjectPool<T>::~tObjectPool()
 {
-
+	delete[] pool;
+	delete[] free;
 }
 
 template <typename T>
